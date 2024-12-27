@@ -409,8 +409,13 @@ export function InvoiceForm({ invoiceData, setInvoiceData }: InvoiceProps) {
                     <Input
                       type="number"
                       placeholder="0"
-                      defaultValue={item.quantity || ''}
-                      onChange={(e) => updateInvoiceItem(index, 'quantity', Number(e.target.value))}
+                      // defaultValue={item.quantity || ''}
+                      value={item.quantity || ''}
+                      min="1"
+                      onChange={(e) => {
+                        const value = Math.max(1, Number(e.target.value));
+                        updateInvoiceItem(index, 'quantity', value);
+                      }}
                     />
                   </TableCell>
                   <TableCell>

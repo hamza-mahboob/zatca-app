@@ -1,6 +1,6 @@
 // /app/api/client/route.ts
 import { db } from "@/lib/firebaseConfig";
-import { collection, addDoc, getDocs } from "firebase/firestore";
+import { collection, addDoc, getDocs, writeBatch, query, where } from "firebase/firestore";
 import { NextRequest, NextResponse } from "next/server";
 
 // Save a new client (POST)
@@ -44,5 +44,29 @@ export async function GET() {
   } catch (error) {
     console.error("Error fetching clients:", error);
     return NextResponse.json({ error: "Failed to fetch clients." }, { status: 500 });
+  }
+}
+
+// Delete a client by VAT number (DELETE)
+export async function DELETE(request: Request) {
+  try {
+    const { vatNumber } = await request.json();
+    const q = query(collection(db, "clients"), where("vatNumber", "==", vatNumber));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      return NextResponse.json({ error: "No client found with the given VAT number." }, { status: 404 });
+    }
+
+    const batch = writeBatch(db);
+    querySnapshot.forEach((doc) => {
+      batch.delete(doc.ref);
+    });
+    await batch.commit();
+
+    return NextResponse.json({ message: "Client(s) deleted successfully!" }, { status: 200 });
+  } catch (error) {
+    console.error("Error deleting client:", error);
+    return NextResponse.json({ error: "Failed to delete client." }, { status: 500 });
   }
 }

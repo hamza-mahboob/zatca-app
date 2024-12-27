@@ -5,7 +5,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Search } from "lucide-react"
+import { Search, Trash2 } from "lucide-react"
+import { TailSpin } from 'react-loader-spinner'
 
 interface Client {
   id: string
@@ -45,6 +46,7 @@ export function ClientSelectModal({
   const [searchQuery, setSearchQuery] = useState("")
 
   const [clients, setClients] = useState<Client[]>([])
+  const [loadingClientId, setLoadingClientId] = useState<string | null>(null)
   const filteredClients = clients.filter(client =>
     client.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     client.vatNumber.includes(searchQuery) || client.country.toLowerCase().includes(searchQuery.toLowerCase())
@@ -69,7 +71,7 @@ export function ClientSelectModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl">
+      <DialogContent className="max-w-4xl">
         <DialogHeader>
           <DialogTitle>Select Client</DialogTitle>
         </DialogHeader>
@@ -107,9 +109,48 @@ export function ClientSelectModal({
                   <TableCell>{client.country}</TableCell>
                   <TableCell>{client.vatNumber}</TableCell>
                   <TableCell>{client.address}</TableCell>
-                  <TableCell>
+                  <TableCell className="break-words max-w-60">
                     {client.phone}<br />
                     {client.email}
+                  </TableCell>
+                  <TableCell>
+                    <button
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        setLoadingClientId(client.id);
+                        try {
+                          const response = await fetch('/api/client', {
+                            method: 'DELETE',
+                            headers: {
+                              'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ vatNumber: client.vatNumber }),
+                          });
+
+                          if (response.ok) {
+                            setClients((prevItems) => prevItems.filter((item) => item.id !== client.id));
+                            console.log('Client deleted successfully');
+                          } else {
+                            console.error('Failed to delete client');
+                          }
+                        } catch (error) {
+                          console.error('Error deleting client:', error);
+                        } finally {
+                          setLoadingClientId(null);
+                        }
+                      }}
+                    >
+                      {loadingClientId === client.id ? (
+                        <TailSpin
+                          height="20"
+                          width="20"
+                          color="#ff0000"
+                          ariaLabel="loading"
+                        />
+                      ) : (
+                        <Trash2 className="h-4 w-4 text-red-500" />
+                      )}
+                    </button>
                   </TableCell>
                 </TableRow>
               ))}

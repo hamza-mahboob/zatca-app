@@ -5,7 +5,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Search } from 'lucide-react'
+import { Search, Trash2 } from 'lucide-react'
+import { TailSpin } from 'react-loader-spinner'
 
 interface Product {
   id: string
@@ -38,6 +39,7 @@ export function ProductSelectModal({
 
 
   const [items, setItems] = useState<Product[]>([])
+  const [loadingProductId, setLoadingProductId] = useState<string | null>(null)
   const filteredProducts = items.filter(product =>
     product.description.toLowerCase().includes(searchQuery.toLowerCase())
   )
@@ -94,6 +96,45 @@ export function ProductSelectModal({
                 >
                   <TableCell>{product.description}</TableCell>
                   <TableCell>{product.price.toFixed(2)}</TableCell>
+                  <TableCell>
+                    <button
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        setLoadingProductId(product.id);
+                        try {
+                          const response = await fetch('/api/items', {
+                            method: 'DELETE',
+                            headers: {
+                              'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ description: product.description }),
+                          });
+
+                          if (response.ok) {
+                            setItems((prevItems) => prevItems.filter((item) => item.id !== product.id));
+                            console.log('Item deleted successfully');
+                          } else {
+                            console.error('Failed to delete item');
+                          }
+                        } catch (error) {
+                          console.error('Error deleting item:', error);
+                        } finally {
+                          setLoadingProductId(null);
+                        }
+                      }}
+                    >
+                      {loadingProductId === product.id ? (
+                        <TailSpin
+                          height="20"
+                          width="20"
+                          color="#ff0000"
+                          ariaLabel="loading"
+                        />
+                      ) : (
+                        <Trash2 className="h-4 w-4 text-red-500" />
+                      )}
+                    </button>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
