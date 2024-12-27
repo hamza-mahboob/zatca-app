@@ -45,5 +45,6 @@ export interface InvoiceData {
     vat: number
     total: number
   }
+  // @ts-nocheck
   qrCodeDataUrl?: any
 }

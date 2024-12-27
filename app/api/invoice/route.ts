@@ -8,7 +8,8 @@ export async function POST(req: NextRequest) {
         const body = await req.json();
 
         // Validate the request body
-        let { seller, client, items, totals, invoiceNumber, invoiceDate, dueDate, salesRep, qrCodeDataUrl } = body;
+        const { seller, client, items, totals, invoiceDate, dueDate, salesRep, qrCodeDataUrl } = body;
+        let { invoiceNumber } = body;
         if (!seller || !client || !items || !totals || !invoiceNumber || !invoiceDate) {
             console.log('returns from here', body);
             return NextResponse.json({ error: "Missing required invoice fields." }, { status: 400 });

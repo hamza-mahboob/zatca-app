@@ -15,14 +15,14 @@ interface Product {
 }
 
 // Temporary mock data - replace with actual database data later
-const mockProducts: Product[] = [
-  {
-    id: "1",
-    description: "Product 1",
-    price: 99.99
-  },
-  // Add more mock products as needed
-]
+// const mockProducts: Product[] = [
+//   {
+//     id: "1",
+//     description: "Product 1",
+//     price: 99.99
+//   },
+//   // Add more mock products as needed
+// ]
 
 interface ProductSelectModalProps {
   open: boolean

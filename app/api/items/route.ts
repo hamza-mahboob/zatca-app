@@ -1,6 +1,6 @@
 // /app/api/items/route.ts
 import { db } from "@/lib/firebaseConfig";
-import { collection, addDoc, getDocs, deleteDoc, query, where, writeBatch } from "firebase/firestore";
+import { collection, addDoc, getDocs, query, where, writeBatch } from "firebase/firestore";
 import { NextRequest, NextResponse } from "next/server";
 
 // Save a new item (POST)

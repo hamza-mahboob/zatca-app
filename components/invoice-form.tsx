@@ -14,6 +14,7 @@ import { AddClientModal } from "./add-client-modal"
 import { Switch } from "@/components/ui/switch"
 import { InvoiceData } from "@/lib/utils"
 import { useQRCode } from "../context/qrCodeContext"
+import Image from "next/image"
 
 type InvoiceProps = {
   invoiceData: InvoiceData
@@ -171,7 +172,7 @@ export function InvoiceForm({ invoiceData, setInvoiceData }: InvoiceProps) {
         }
       }
     })
-  }, [includeVAT])
+  }, [includeVAT, setInvoiceData])
 
   return (
     <div className="container py-6 space-y-6" id="invoice">
@@ -467,7 +468,7 @@ export function InvoiceForm({ invoiceData, setInvoiceData }: InvoiceProps) {
         <div className="flex-1">
           {qrCode && (
             <div className="flex justify-between items-center ml-5">
-              <img src={qrCode} alt="QR Code" className="w-60 h-60" />
+              <Image src={qrCode} alt="QR Code" className="w-60 h-60" />
             </div>
           )}
         </div>

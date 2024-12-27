@@ -8,7 +8,7 @@ import { useQRCode } from "@/context/qrCodeContext"
 
 export default function Page() {
 
-  const { selectedInvoice, qrCode } = useQRCode()
+  const { selectedInvoice } = useQRCode()
 
   // console.log('selected', selectedInvoice)
 

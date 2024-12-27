@@ -19,18 +19,18 @@ interface Client {
 }
 
 // Temporary mock data - replace with actual database data later
-const mockClients: Client[] = [
-  {
-    id: "'1'",
-    name: "Hamza",
-    country: "'Saudi Arabia, Riyadh'",
-    vatNumber: "'123456789'",
-    address: "'123 Main St'",
-    phone: "'+966 123 4567'",
-    email: "'client1@example.com'"
-  },
-  // Add more mock clients as needed
-]
+// const mockClients: Client[] = [
+//   {
+//     id: "'1'",
+//     name: "Hamza",
+//     country: "'Saudi Arabia, Riyadh'",
+//     vatNumber: "'123456789'",
+//     address: "'123 Main St'",
+//     phone: "'+966 123 4567'",
+//     email: "'client1@example.com'"
+//   },
+//   // Add more mock clients as needed
+// ]
 
 interface ClientSelectModalProps {
   open: boolean
