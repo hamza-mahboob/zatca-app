@@ -48,3 +48,4 @@ export interface InvoiceData {
   // @ts-nocheck
   qrCodeDataUrl?: any
 }
+
