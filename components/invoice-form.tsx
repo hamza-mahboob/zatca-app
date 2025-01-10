@@ -534,8 +534,8 @@ export function InvoiceForm({ invoiceData, setInvoiceData }: InvoiceProps) {
                   <div className="flex justify-between">
                     <span>15% VAT</span>
                     <span>
-                      {includeVAT ? invoiceData.totals.vat.toFixed(2) : "0.00"}{" "}
-                      %
+                      {/* {includeVAT ? invoiceData.totals.vat.toFixed(2) : "0.00"}{" "}% */}
+                      {(invoiceData.totals.subtotal * 0.15).toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between font-bold">

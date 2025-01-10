@@ -233,22 +233,21 @@ export function SiteHeader({ invoiceData, setInvoiceData }: HeaderProps) {
     const sellerDetails = `
       <table style="width: 100%; border-collapse: collapse;">
         ${Object.entries(invoiceData.seller)
-          .map(
-            ([key, value], index, array) => `
+        .map(
+          ([key, value], index, array) => `
             <tr style="height: 55px;">
               <td style="padding: 8px; border-right: 1px solid #d3d3d3; width: 30%; vertical-align: middle; background-color: #f8f8f8;">
                 <strong>${keyMappings[key] || key}:</strong>
               </td>
               <td style="padding: 8px; width: 70%; vertical-align: middle;">${value}</td>
             </tr>
-            ${
-              index !== array.length - 1
-                ? '<tr><td colspan="2" style="border-bottom: 1px solid #d3d3d3;"></td></tr>'
-                : ""
+            ${index !== array.length - 1
+              ? '<tr><td colspan="2" style="border-bottom: 1px solid #d3d3d3;"></td></tr>'
+              : ""
             }
           `
-          )
-          .join("")}
+        )
+        .join("")}
       </table>
       `;
 
@@ -256,22 +255,21 @@ export function SiteHeader({ invoiceData, setInvoiceData }: HeaderProps) {
     const clientDetails = `
       <table style="width: 100%; border-collapse: collapse;">
         ${Object.entries(invoiceData.client)
-          .map(
-            ([key, value], index, array) => `
+        .map(
+          ([key, value], index, array) => `
             <tr style="height: 55px;">
               <td style="padding: 8px; border-right: 1px solid #d3d3d3; width: 30%; vertical-align: middle; background-color: #f8f8f8;">
                 <strong>${keyMappings[key] || key}:</strong>
               </td>
               <td style="padding: 8px; width: 70%; vertical-align: middle;">${value}</td>
             </tr>
-            ${
-              index !== array.length - 1
-                ? '<tr><td colspan="2" style="border-bottom: 1px solid #d3d3d3;"></td></tr>'
-                : ""
+            ${index !== array.length - 1
+              ? '<tr><td colspan="2" style="border-bottom: 1px solid #d3d3d3;"></td></tr>'
+              : ""
             }
           `
-          )
-          .join("")}
+        )
+        .join("")}
       </table>
       `;
 
@@ -288,16 +286,16 @@ export function SiteHeader({ invoiceData, setInvoiceData }: HeaderProps) {
         </thead>
         <tbody>
           ${invoiceData.items
-            .map(
-              (item) => `
+        .map(
+          (item) => `
               <tr>
                 <td style="border: 1px solid #d3d3d3; padding: 12px;">${item.description}</td>
                 <td style="border: 1px solid #d3d3d3; padding: 12px; text-align: center;">${item.quantity}</td>
                 <td style="border: 1px solid #d3d3d3; padding: 12px; text-align: right;">${item.price}</td>
                 <td style="border: 1px solid #d3d3d3; padding: 12px; text-align: right;">${item.total}</td>
               </tr>`
-            )
-            .join("")}
+        )
+        .join("")}
         </tbody>
       </table>
       `;
@@ -309,20 +307,19 @@ export function SiteHeader({ invoiceData, setInvoiceData }: HeaderProps) {
           <tr>
             <td style="padding: 8px; border: 1px solid #d3d3d3;">المجموع بدون الضريبة | Total Without VAT</td>
             <td style="padding: 8px; border: 1px solid #d3d3d3; text-align: right;">${invoiceData.totals.subtotal.toFixed(
-              2
-            )} SAR</td>
+        2
+      )} SAR</td>
           </tr>
           <tr>
-            <td style="padding: 8px; border: 1px solid #d3d3d3;">ضريبة القيمة المضافة | VAT</td>
-            <td style="padding: 8px; border: 1px solid #d3d3d3; text-align: right;">${
-              invoiceData.totals.vat
-            }%</td>
+            <td style="padding: 8px; border: 1px solid #d3d3d3;">ضريبة القيمة المضافة | VAT 15%</td>
+            <td style="padding: 8px; border: 1px solid #d3d3d3; text-align: right;">${(invoiceData.totals.subtotal * 0.15).toFixed(2)
+      } SAR</td>
           </tr>
           <tr>
             <td style="padding: 8px; border: 1px solid #d3d3d3;">المجموع شامل الضريبة | Total with VAT</td>
             <td style="padding: 8px; border: 1px solid #d3d3d3; text-align: right; font-weight: bold;">${invoiceData.totals.total.toFixed(
-              2
-            )} SAR</td>
+        2
+      )} SAR</td>
           </tr>
         </table>
       `
@@ -409,7 +406,7 @@ export function SiteHeader({ invoiceData, setInvoiceData }: HeaderProps) {
       const pageWidth = doc.internal.pageSize.getWidth();
 
       // Add the header (client/seller details)
-      let canvasInvoice = await html2canvas(invoiceContainer, { scale: 2 });
+      let canvasInvoice = await html2canvas(invoiceContainer, { scale: 1 });
       const imgDataInvoice = canvasInvoice.toDataURL("image/png");
       let imgHeight = (canvasInvoice.height * pageWidth) / canvasInvoice.width;
       doc.addImage(imgDataInvoice, "PNG", 0, yPosition, pageWidth, imgHeight);
@@ -424,7 +421,7 @@ export function SiteHeader({ invoiceData, setInvoiceData }: HeaderProps) {
       // Helper function to render tables
       const renderTableToCanvas = async (tableHTML) => {
         invoiceContainer.innerHTML = tableHTML;
-        return await html2canvas(invoiceContainer, { scale: 2 });
+        return await html2canvas(invoiceContainer, { scale: 1 });
       };
 
       // Add the first two items to the same page as the header
@@ -507,16 +504,16 @@ export function SiteHeader({ invoiceData, setInvoiceData }: HeaderProps) {
           </thead>
           <tbody>
             ${items
-              .map(
-                (item) => `
+          .map(
+            (item) => `
                 <tr>
                   <td style="border: 1px solid #d3d3d3; padding: 8px;">${item.description}</td>
                   <td style="border: 1px solid #d3d3d3; padding: 8px; text-align: center;">${item.quantity}</td>
                   <td style="border: 1px solid #d3d3d3; padding: 8px; text-align: right;">${item.price}</td>
                   <td style="border: 1px solid #d3d3d3; padding: 8px; text-align: right;">${item.total}</td>
                 </tr>`
-              )
-              .join("")}
+          )
+          .join("")}
           </tbody>
         </table>
       `;
