@@ -5,6 +5,7 @@ import { InvoiceForm } from "@/components/invoice-form"
 import { useEffect, useState } from "react"
 import { InvoiceData } from "@/lib/utils"
 import { useQRCode } from "@/context/qrCodeContext"
+import Image from "next/image"
 
 export default function Page() {
 
@@ -92,7 +93,8 @@ export default function Page() {
   return (
     <div className="min-h-screen flex flex-col w-full max-w-[90rem] mx-auto p-4">
       <SiteHeader invoiceData={invoiceData} setInvoiceData={setInvoiceData} />
-      <main className="flex-1 p-5">
+      <main className="flex-1 md:p-5">
+        <Image src={'/logo_invoice.jpg'} alt="logo" width={1400} height={100} className="mt-3 md:-mt-3" />
         <InvoiceForm invoiceData={invoiceData} setInvoiceData={setInvoiceData} />
       </main>
     </div>

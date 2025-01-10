@@ -9,6 +9,7 @@ import {
   Eye,
   Calculator,
   Loader2,
+  Menu,
 } from "lucide-react";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
@@ -42,6 +43,7 @@ export function SiteHeader({ invoiceData, setInvoiceData }: HeaderProps) {
 
   const [isInvoiceModalOpen, setInvoiceModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleInvoiceSelect = (invoice: InvoiceData) => {
     setSelectedInvoice(invoice);
@@ -701,8 +703,83 @@ export function SiteHeader({ invoiceData, setInvoiceData }: HeaderProps) {
       <div className="container flex h-20 items-center">
         <Link href="/" className="flex items-center space-x-2">
           <FileText className="h-6 w-6" />
-          <span className="font-bold">VAT Invoice Generator</span>
+          <span className="font-bold">Invoice Manager</span>
         </Link>
+
+        <div className="md:hidden relative ml-auto">
+          {/* Hamburger Icon */}
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="p-2 text-gray-700 bg-gray-100 rounded-lg dark:bg-neutral-800 focus:outline-none"
+          >
+            <Menu className="h-6 w-6" />
+          </button>
+
+          {/* Mobile Menu */}
+          {menuOpen && (
+            <div className="absolute top-10 right-0 z-40 w-60 rounded-lg bg-white shadow-lg dark:bg-neutral-950">
+              <ul className="flex flex-col space-y-2 p-4">
+                <li>
+                  <button
+                    className="w-full flex items-center p-2 rounded-md bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-gray-300"
+                    onClick={() => {
+                      handleDownloadPDF();
+                      setMenuOpen(false);
+                    }}
+                  >
+                    <Download className="mr-2 h-4 w-4" />
+                    Download
+                  </button>
+                </li>
+                <li>
+                  <button
+                    className="w-full flex items-center p-2 rounded-md bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-gray-300"
+                    onClick={() => {
+                      // Reset QR code context
+                      setQRCode("");
+                      setSelectedInvoice(null);
+                      setMenuOpen(false);
+
+                      // Reload the page
+                      window.location.reload();
+                      // Scroll to the top of the page
+                      window.scrollTo({ top: 0 });
+                    }}
+                  >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Create New
+                  </button>
+                </li>
+                <li>
+                  <button
+                    className="w-full flex items-center p-2 rounded-md bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-gray-300"
+                    onClick={() => {
+                      setInvoiceModalOpen(true);
+                      setMenuOpen(false);
+                    }}
+                  >
+                    <Eye className="mr-2 h-4 w-4" />
+                    View Saved
+                  </button>
+                </li>
+                <li>
+                  <button
+                    className="w-full flex items-center p-2 rounded-md bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-gray-300"
+                    onClick={() => {
+                      handleSaveInvoice();
+                      setMenuOpen(false);
+                    }}
+                    disabled={loading}
+                  >
+                    <Calculator className="mr-2 h-4 w-4" />
+                    {loading ? <Loader2 /> : "Generate Invoice"}
+                  </button>
+                </li>
+              </ul>
+            </div>
+          )}
+        </div>
+
         <div className="hidden md:flex flex-1 items-center justify-end space-x-2">
           <Button variant="outline" size="sm" onClick={handleDownloadPDF}>
             <Download className="mr-2 h-4 w-4" />

@@ -199,7 +199,7 @@ export function InvoiceForm({ invoiceData, setInvoiceData }: InvoiceProps) {
   return (
     <div className="container py-6 space-y-6" id="invoice">
       {/* Invoice Header */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-1 w-80 md:w-full mx-auto">
         <div className="space-y-2">
           <Label htmlFor="invoice-number">Invoice # فاتورة ضريبية</Label>
           <Input
@@ -307,7 +307,7 @@ export function InvoiceForm({ invoiceData, setInvoiceData }: InvoiceProps) {
 
         <Card>
           <CardHeader className="pb-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-2">
               <div className="font-semibold">Client Information | عميل</div>
               <div className="flex gap-2">
                 <Button
@@ -388,7 +388,7 @@ export function InvoiceForm({ invoiceData, setInvoiceData }: InvoiceProps) {
       {/* Invoice Items Table */}
       <Card>
         <CardHeader className="pb-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col md:flex-row gap-2 items-center justify-between">
             <div className="font-semibold">Invoice Items</div>
             <div className="flex gap-2">
               <Button
@@ -501,7 +501,7 @@ export function InvoiceForm({ invoiceData, setInvoiceData }: InvoiceProps) {
         </CardContent>
       </Card>
 
-      <div className="flex">
+      <div className="flex flex-col md:flex-row gap-5 md:gap-0 items-center md:items-start">
         <div className="flex-1">
           {qrCode && (
             <div className="flex justify-between items-center ml-5">
