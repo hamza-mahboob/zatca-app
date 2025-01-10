@@ -54,7 +54,7 @@ export function SiteHeader({ invoiceData, setInvoiceData }: HeaderProps) {
     const doc = new jsPDF();
 
     const invoiceContainer = document.createElement("div");
-    const itemsAndTotalContainer = document.createElement("div");
+    // const itemsAndTotalContainer = document.createElement("div");
     Object.assign(invoiceContainer.style, {
       width: "800px",
       padding: "40px 20px",
@@ -75,7 +75,7 @@ export function SiteHeader({ invoiceData, setInvoiceData }: HeaderProps) {
 
     logoContainer.appendChild(logo);
     invoiceContainer.appendChild(logoContainer);
-    itemsAndTotalContainer.appendChild(invoiceContainer);
+    // itemsAndTotalContainer.appendChild(invoiceContainer);
 
     // Add invoice details
     //   invoiceContainer.innerHTML += `
@@ -275,7 +275,7 @@ export function SiteHeader({ invoiceData, setInvoiceData }: HeaderProps) {
 
     // Items table
     const itemsTable = `
-      <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+      <table style="width: 100%; border-collapse: collapse;">
         <thead>
           <tr>
             <th style="border: 1px solid #d3d3d3; padding: 12px; background-color: #f8f8f8;">الوصف | Description</th>
@@ -318,7 +318,7 @@ export function SiteHeader({ invoiceData, setInvoiceData }: HeaderProps) {
           </tr>
           <tr>
             <td style="padding: 8px; border: 1px solid #d3d3d3;">المجموع شامل الضريبة | Total with VAT</td>
-            <td style="padding: 8px; border: 1px solid #d3d3d3; text-align: right;">${invoiceData.totals.total.toFixed(
+            <td style="padding: 8px; border: 1px solid #d3d3d3; text-align: right; font-weight: bold;">${invoiceData.totals.total.toFixed(
               2
             )} SAR</td>
           </tr>
@@ -335,8 +335,8 @@ export function SiteHeader({ invoiceData, setInvoiceData }: HeaderProps) {
 
     // QR code container
     const qrCodeContainer = `
-      <div style="width: 200px;"> 
-        <img src="${qrCode}" style="width: 200px; height: 200px;">
+      <div style="width: 170px;"> 
+        <img src="${qrCode}" style="width: 170px; height: 170px;">
       </div>
       `;
 
@@ -371,9 +371,9 @@ export function SiteHeader({ invoiceData, setInvoiceData }: HeaderProps) {
       `;
 
     // Final result
-    const finalInvoice = `
+    const invoiceInitial = `
             ${invoiceHeader}
-            <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; margin-top: 30px">
+            <table style="width: 100%; border-collapse: collapse; margin-top: 30px">
               <tr>
                 <th style="width: 50%; padding: 15px; border: 1px solid #d3d3d3; background-color: #f8f8f8; text-align: center;">البائع | Seller</th>
                 <th style="width: 50%; padding: 15px; border: 1px solid #d3d3d3; background-color: #f8f8f8; text-align: center;">العميل | Client</th>
@@ -385,52 +385,139 @@ export function SiteHeader({ invoiceData, setInvoiceData }: HeaderProps) {
             </table>
       `;
 
-    const itemsAndTotal = `
-            ${itemsTable}
-            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 20px;">
-              ${qrCodeContainer}
-              ${totalsTable}
-            </div>`;
+    const invoiceItems = `${itemsTable}`;
 
-    if (invoiceData.items.length > 1)
-      invoiceContainer.innerHTML += finalInvoice;
-    else invoiceContainer.innerHTML += finalInvoice + itemsAndTotal;
+    const invoiceTotal = `
+              <div style="display: flex; justify-content: space-between; align-items: start;">
+                ${qrCodeContainer}
+                ${totalsTable}
+              </div>
+            `;
+
+    // if (invoiceData.items.length > 1)
+    invoiceContainer.innerHTML += invoiceInitial;
+    // else invoiceContainer.innerHTML += invoiceInitial + invoiceItems;
 
     // Temporarily append to body for rendering
     document.body.appendChild(invoiceContainer);
 
     try {
-      // Convert to canvas for final invoice (header + seller/client details)
-      const canvasInvoice = await html2canvas(invoiceContainer, { scale: 2 });
+      let yPosition = 0; // Current position on the page
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const pageWidth = doc.internal.pageSize.getWidth();
+
+      // Add the header (client/seller details)
+      let canvasInvoice = await html2canvas(invoiceContainer, { scale: 2 });
       const imgDataInvoice = canvasInvoice.toDataURL("image/png");
+      let imgHeight = (canvasInvoice.height * pageWidth) / canvasInvoice.width;
+      doc.addImage(imgDataInvoice, "PNG", 0, yPosition, pageWidth, imgHeight);
+      yPosition += imgHeight - 10;
 
-      // Add the final invoice image to the PDF
-      let imgWidth = doc.internal.pageSize.getWidth();
-      let imgHeight = (canvasInvoice.height * imgWidth) / canvasInvoice.width;
-      doc.addImage(imgDataInvoice, "PNG", 0, 0, imgWidth, imgHeight);
+      // Split items into chunks for pagination
+      const items = invoiceData.items;
+      const firstPageItems = items.slice(0, 5);
+      const remainingItems = items.slice(5);
+      const itemChunks = chunkArray(remainingItems, 20);
 
-      //TODO: Fix this (under) and replace it with the auto table thing for items for pagination
-      //Add a page if there are more than 1 items
-      if (invoiceData.items.length > 1) {
-        // Now append the items and totals
-        invoiceContainer.innerHTML = itemsAndTotal;
+      // Helper function to render tables
+      const renderTableToCanvas = async (tableHTML) => {
+        invoiceContainer.innerHTML = tableHTML;
+        return await html2canvas(invoiceContainer, { scale: 2 });
+      };
 
-        // Convert to canvas for the items and totals
-        const canvasItems = await html2canvas(invoiceContainer, { scale: 2 });
-        const imgDataItems = canvasItems.toDataURL("image/png");
+      // Add the first two items to the same page as the header
+      if (firstPageItems.length > 0) {
+        const firstTableHTML = generateTableHTML(firstPageItems);
+        canvasInvoice = await renderTableToCanvas(firstTableHTML);
+        const imgDataFirstTable = canvasInvoice.toDataURL("image/png");
+        imgHeight = (canvasInvoice.height * pageWidth) / canvasInvoice.width;
 
-        imgHeight = (canvasItems.height * imgWidth) / canvasItems.width;
+        if (yPosition + imgHeight > pageHeight) {
+          doc.addPage();
+          yPosition = 0;
+        }
 
-        // Add the items and totals image to the PDF
-        doc.addPage(); // Add a new page for items and totals
-        doc.addImage(imgDataItems, "PNG", 0, 0, imgWidth, imgHeight);
+        doc.addImage(
+          imgDataFirstTable,
+          "PNG",
+          0,
+          yPosition,
+          pageWidth,
+          imgHeight
+        );
+        yPosition += imgHeight;
       }
+
+      // Add remaining items with pagination
+      for (const chunk of itemChunks) {
+        const tableHTML = generateTableHTML(chunk);
+        canvasInvoice = await renderTableToCanvas(tableHTML);
+        const imgDataChunk = canvasInvoice.toDataURL("image/png");
+        imgHeight = (canvasInvoice.height * pageWidth) / canvasInvoice.width;
+
+        doc.addPage(); // Start a new page for each chunk
+        yPosition = 0;
+        doc.addImage(imgDataChunk, "PNG", 0, yPosition, pageWidth, imgHeight);
+        yPosition += imgHeight;
+      }
+
+      // Add the invoice total
+      canvasInvoice = await renderTableToCanvas(invoiceTotal);
+      const imgDataTotal = canvasInvoice.toDataURL("image/png");
+      imgHeight = (canvasInvoice.height * pageWidth) / canvasInvoice.width;
+
+      if (yPosition + imgHeight > pageHeight + 20) {
+        doc.addPage();
+        yPosition = 0;
+      }
+      doc.addImage(imgDataTotal, "PNG", 0, yPosition, pageWidth, imgHeight);
 
       // Save the PDF
       doc.save(`invoice_${invoiceData.invoiceNumber}.pdf`);
     } finally {
-      // Clean up by removing the invoice container from the body
       document.body.removeChild(invoiceContainer);
+    }
+
+    /**
+     * Helper function to split an array into chunks of a specified size.
+     */
+    function chunkArray(array, chunkSize) {
+      const chunks = [];
+      for (let i = 0; i < array.length; i += chunkSize) {
+        chunks.push(array.slice(i, i + chunkSize));
+      }
+      return chunks;
+    }
+
+    /**
+     * Generate HTML for a table with the given items.
+     */
+    function generateTableHTML(items) {
+      return `
+        <table style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr>
+              <th style="border: 1px solid #d3d3d3; padding: 8px; background-color: #f8f8f8;">الوصف | Description</th>
+              <th style="border: 1px solid #d3d3d3; padding: 8px; background-color: #f8f8f8;">الكمية | Quantity</th>
+              <th style="border: 1px solid #d3d3d3; padding: 8px; background-color: #f8f8f8;">السعر | Price</th>
+              <th style="border: 1px solid #d3d3d3; padding: 8px; background-color: #f8f8f8;">المجموع | Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${items
+              .map(
+                (item) => `
+                <tr>
+                  <td style="border: 1px solid #d3d3d3; padding: 8px;">${item.description}</td>
+                  <td style="border: 1px solid #d3d3d3; padding: 8px; text-align: center;">${item.quantity}</td>
+                  <td style="border: 1px solid #d3d3d3; padding: 8px; text-align: right;">${item.price}</td>
+                  <td style="border: 1px solid #d3d3d3; padding: 8px; text-align: right;">${item.total}</td>
+                </tr>`
+              )
+              .join("")}
+          </tbody>
+        </table>
+      `;
     }
   };
 
