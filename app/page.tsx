@@ -91,7 +91,7 @@ export default function Page() {
   // console.log('invoiceData', invoiceData)
 
   return (
-    <div className="min-h-screen flex flex-col w-full max-w-[90rem] mx-auto p-4">
+    <div className="min-h-screen flex flex-col w-full max-w-[90rem] mx-auto p-2 md:p-4">
       <SiteHeader invoiceData={invoiceData} setInvoiceData={setInvoiceData} />
       <main className="flex-1 md:p-5">
         <Image src={'/logo_invoice.jpg'} alt="logo" width={1400} height={100} className="mt-3 md:-mt-3" />

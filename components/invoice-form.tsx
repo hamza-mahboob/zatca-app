@@ -410,14 +410,14 @@ export function InvoiceForm({ invoiceData, setInvoiceData }: InvoiceProps) {
             </div>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="md:pt-0">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[50%]">Description</TableHead>
+                <TableHead className="md:w-[50%]">Description</TableHead>
                 <TableHead>Quantity</TableHead>
                 <TableHead>Price ($)</TableHead>
-                <TableHead className="text-right">Total</TableHead>
+                <TableHead className="md:text-right">Total</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -441,6 +441,7 @@ export function InvoiceForm({ invoiceData, setInvoiceData }: InvoiceProps) {
                         const value = Math.max(1, Number(e.target.value));
                         updateInvoiceItem(index, "quantity", value);
                       }}
+                      className="text-center md:text-start"
                     />
                   </TableCell>
                   <TableCell>
@@ -458,7 +459,7 @@ export function InvoiceForm({ invoiceData, setInvoiceData }: InvoiceProps) {
                     />
                   </TableCell>
                   <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-2">
+                    <div className="flex items-center justify-end md:gap-2">
                       <span>{item.total.toFixed(2)}</span>
                       <Button
                         variant="ghost"
@@ -517,7 +518,7 @@ export function InvoiceForm({ invoiceData, setInvoiceData }: InvoiceProps) {
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
                     <label className="text-sm font-medium">Include VAT</label>
-                    <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                    <p className="text-sm text-neutral-500 dark:text-neutral-400 md:w-60">
                       Toggle 15% VAT calculation
                     </p>
                   </div>
